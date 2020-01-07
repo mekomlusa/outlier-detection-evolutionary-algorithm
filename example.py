@@ -8,8 +8,8 @@ from collections import defaultdict
 import random
 import copy
 
-from models.brute_force import BruteForce
-from models.evolutionary import Evolutionary
+from evood.models.brute_force import BruteForce
+from evood.models.evolutionary import Evolutionary
 
 wine = datasets.load_wine()
 X = wine.data
@@ -20,9 +20,9 @@ feature_names = wine.feature_names
 print("Shape of X: {}".format(X.shape))
 
 # test brute force
-clf = BruteForce()
-res, range_dict = clf.fit(X[:, :8], 5, 3, 5)
-print(res)
+# clf = BruteForce()
+# res, range_dict = clf.fit(X[:, :8], 5, 3, 5)
+# print(res)
 
 # test evolutionary
 clf = Evolutionary()

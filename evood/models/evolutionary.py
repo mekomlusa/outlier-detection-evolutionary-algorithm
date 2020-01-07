@@ -11,7 +11,7 @@ from collections import defaultdict
 import random
 import copy
 
-import utils
+from evood.utils import str_to_col_grid_lists, sparsity_coeff, get_all_possible_combinations, get_sparsity_coeff_from_str
 
 
 class Evolutionary:
@@ -44,9 +44,9 @@ class Evolutionary:
 
         # get sparsity coeff
         for string in S:
-            selected_cols, selected_ranges = utils.str_to_col_grid_lists(string)
+            selected_cols, selected_ranges = str_to_col_grid_lists(string)
             score_dict[tuple(selected_cols)][tuple(selected_ranges)] = {}
-            sparsity_coeff_score, grid_ranges, num_of_records = utils.sparsity_coeff(data, phi, selected_cols, selected_ranges)
+            sparsity_coeff_score, grid_ranges, num_of_records = sparsity_coeff(data, phi, selected_cols, selected_ranges)
             score_dict[tuple(selected_cols)][tuple(selected_ranges)]['sparsity_coeff_score'] = sparsity_coeff_score
             score_dict[tuple(selected_cols)][tuple(selected_ranges)]['num_records'] = num_of_records
             orig_grid_ranges_dict.update(grid_ranges)
@@ -73,7 +73,7 @@ class Evolutionary:
         rand_val = random.random()
 
         for string in S:
-            selected_cols, selected_ranges = utils.str_to_col_grid_lists(string)
+            selected_cols, selected_ranges = str_to_col_grid_lists(string)
             likelihood = score_dict[tuple(selected_cols)][tuple(selected_ranges)]['prob']
 
             if rand_val < likelihood:
@@ -127,10 +127,10 @@ class Evolutionary:
         # manipulating R first: get all possible combinations of candidate strings & compare.
         # TODO: the logic here is a bit vague. Not the exact implementation like the paper describes.
         if len(R) > 0:
-            potential_children = utils.get_all_possible_combinations(s1, s2, R)
+            potential_children = get_all_possible_combinations(s1, s2, R)
 
             for c in potential_children:
-                sparsity_coefficent = utils.get_sparsity_coeff_from_str(c, data, phi)
+                sparsity_coefficent = get_sparsity_coeff_from_str(c, data, phi)
                 if sparsity_coefficent < best_score:
                     best_kid = c
                     best_score = sparsity_coefficent
@@ -144,7 +144,7 @@ class Evolutionary:
                 tmp_str_list = copy.deepcopy(kid1)
                 tmp_str_list = list(tmp_str_list) # otherwise will have weird errors
                 tmp_str_list[pos] = non_star_pos_val
-                new_sparsity_coeff = utils.get_sparsity_coeff_from_str("".join(tmp_str_list), data, phi)
+                new_sparsity_coeff = get_sparsity_coeff_from_str("".join(tmp_str_list), data, phi)
                 if new_sparsity_coeff < best_score and len(tmp_str_list) - tmp_str_list.count("*") < parent_dim: # cannot exchange if exceed parent dim
                     kid1 = "".join(tmp_str_list)
                     best_score = new_sparsity_coeff
@@ -323,8 +323,8 @@ class Evolutionary:
             orig_grid_ranges_dict = {}
 
             for sol in S:
-                selected_cols, selected_ranges = utils.str_to_col_grid_lists(sol)
-                sparsity_coeff_score, transformed_cat_info, nD = utils.sparsity_coeff(data, phi, selected_cols, selected_ranges)
+                selected_cols, selected_ranges = str_to_col_grid_lists(sol)
+                sparsity_coeff_score, transformed_cat_info, nD = sparsity_coeff(data, phi, selected_cols, selected_ranges)
                 sparsity_coeff_dict[sol] = {}
                 sparsity_coeff_dict[sol]['sparsity_coeff_score'] = sparsity_coeff_score
                 sparsity_coeff_dict[sol]['num_records'] = nD

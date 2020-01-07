@@ -8,8 +8,7 @@ import pandas as pd
 import itertools
 from collections import defaultdict
 
-from utils import sparsity_coeff, enumerate_subsets
-
+from evood.utils import sparsity_coeff, enumerate_subsets
 
 class BruteForce:
 
