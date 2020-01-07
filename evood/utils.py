@@ -47,8 +47,8 @@ def sparsity_coeff(data, phi, selected_cols, selected_ranges):
     data_transformed = np.array([0] * N)
 
     for col in selected_cols:
-        transformed_cat_info[col] = pd.qcut(data[:, col], phi).categories.to_tuples().to_list()
-        new_coded = pd.qcut(data[:, col], phi, labels=False)
+        transformed_cat_info[col] = pd.qcut(data[:, col], phi, duplicates="drop").categories.to_tuples().to_list()
+        new_coded = pd.qcut(data[:, col], phi, labels=False, duplicates="drop")
         data_transformed = np.vstack((data_transformed.T, new_coded)).T
 
     # get rid of the empty col at the beginning

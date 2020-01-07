@@ -15,6 +15,7 @@ class BruteForce:
     def __init__(self):
         self.score_df = pd.DataFrame()
         self.grid_ranges_dict = {}
+        #self.feature_names = []
 
     def fit(self, data, m, k, phi):
         """
@@ -32,6 +33,11 @@ class BruteForce:
             orig_grid_ranges_dict: (dict) a dictionary that keeps transformed grid ranges information for all columns in `data`.
 
         """
+
+        # accommodate Pandas DataFrame. What to do about feature names???
+        if isinstance(data, pd.DataFrame):
+            data = data.values
+
         assert (k <= data.shape[1]), "ValueError: number of sub-dimensions to look at is {}, exceed the original data dimension {}".format(k, data.shape[1])
 
         sparsity_coeff_dict = defaultdict(dict)
