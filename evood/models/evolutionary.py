@@ -16,9 +16,27 @@ from evood.utils import str_to_col_grid_lists, sparsity_coeff, get_all_possible_
 
 class Evolutionary:
 
-    def __init__(self):
+    def __init__(self, p1=0.5, p2=0.5):
+        """
+
+        Initialization
+
+        Parameters:
+            p1: (float) mutation probability for type I (positions in Q - positions that are *). Default to be 0.5
+            p2: (float) mutation probability for type II (positions in R - positions that are NOT *). Default to be 0.5
+
+        Return:
+            None
+
+        """
+    
+        assert (p1 <= 1 and p1 >= 0), "ERROR: p1 should be within [0,1] as a probability!"
+        assert (p2 <= 1 and p2 >= 0), "ERROR: p2 should be within [0,1] as a probability!"
+        
         self.grid_ranges_dict = {}
         self.best_set = []
+        self.p1 = p1
+        self.p2 = p2
 
     # selection
     def selection(self, S, phi, data):
@@ -196,7 +214,7 @@ class Evolutionary:
 
         return results
 
-    def mutation(self, S, p1, p2, phi):
+    def mutation(self, S, phi):
 
         """
 
@@ -204,17 +222,12 @@ class Evolutionary:
 
         Parameters:
             S: (list) a list that contains multiple solution strings (aka population).
-            p1: (float) mutation probability for type I (positions in Q - positions that are *)
-            p2: (float) mutation probability for type II (positions in R - positions that are NOT *)
             phi: (int) the ideal number of equi-depth ranges.
 
         Return:
             A new collection of candidate strings after mutation.
 
         """
-
-        assert (p1 <= 1 and p1 >= 0), "ERROR: p1 should be within [0,1] as a probability!"
-        assert (p2 <= 1 and p2 >= 0), "ERROR: p2 should be within [0,1] as a probability!"
 
         new_set = []
 
@@ -235,7 +248,7 @@ class Evolutionary:
 
             # determine whether to mutate in Q
             ran_choice = random.random()
-            if ran_choice > p1:
+            if ran_choice > self.p1:
                 selected_Q = random.choice(Q)
                 sol_list[selected_Q] = str(random.randint(0, phi - 1))
                 Q.remove(selected_Q)
@@ -288,7 +301,7 @@ class Evolutionary:
         return population_set
 
     # put all the subroutines together
-    def fit(self, m, k, p, p1, p2, iterations, data, phi):
+    def fit(self, m, k, p, iterations, data, phi):
 
         """
 
@@ -298,8 +311,6 @@ class Evolutionary:
             m: (int) the desired of solutions to keep.
             k: (int) number of sub-dimensions to work on. k should be less than the number of columns in `data`.
             p: (int) the desired number of solutions to be included in the population.
-            p1: (float) mutation probability for type I (positions in Q - positions that are *)
-            p2: (float) mutation probability for type II (positions in R - positions that are NOT *)
             iterations: (int) number of iterations to run (use instead of the termination criterion)
             data: (np.array) the original data source.
             phi: (int) the ideal number of equi-depth ranges.
@@ -316,7 +327,7 @@ class Evolutionary:
         for i in range(iterations): # instead of using the 95% convergence idea, need to manually configure termination criterion
             S = self.selection(S, phi, data)
             S = self.crossover(S, phi, data)
-            S = self.mutation(S, p1, p2, phi)
+            S = self.mutation(S, self.p1, self.p2, phi)
 
             # rank the solutions in S and get the top m results
             sparsity_coeff_dict = defaultdict(dict)

@@ -29,14 +29,14 @@ feature_names = X.columns.values.tolist()
 print("# of records in X: {}".format(len(X)))
 
 # test brute force
-clf = BruteForce()
-#res, range_dict = clf.fit(X[:, :8], 5, 3, 5)
-res, range_dict = clf.fit(X[['age','sex','cp','trestbps','chol']], 5, 3, 5) # for dataframe
-print(res)
-print(range_dict)
+# clf = BruteForce()
+# #res, range_dict = clf.fit(X[:, :8], 5, 3, 5)
+# res, range_dict = clf.fit(X[['age','sex','cp','trestbps','chol']], 5, 3, 5) # for dataframe
+# print(res)
+# print(range_dict)
 
 # test evolutionary
-# clf = Evolutionary()
-# grid_ranges_dict, best_sol = clf.fit(5, 3, 50, 0.4, 0.7, 10, X, 5)
-# print(grid_ranges_dict)
-# print(best_sol)
+clf = Evolutionary(p1=0.4, p2=0.7)
+grid_ranges_dict, best_sol = clf.fit(5, 3, 50, 10, X, 5)
+print(grid_ranges_dict)
+print(best_sol)
