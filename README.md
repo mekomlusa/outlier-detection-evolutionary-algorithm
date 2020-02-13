@@ -1,6 +1,6 @@
 # outlier-detection-evolutionary-algorithm
 
-A simple implementation of [Outlier Detection for High Dimensional Data](http://www.charuaggarwal.net/outl.pdf) in Python (ongoing).
+A simple implementation of [Outlier Detection for High Dimensional Data](http://www.charuaggarwal.net/outl.pdf) in Python.
 
 ## Usage
 
@@ -11,10 +11,11 @@ Algorithms implemented:
 * The naive brute force algorithm
 * The evolutionary algorithm
 
-Right now the input is expected to be a Numpy array. Will extend to accommodate Pandas DataFrames.
+The input could be either Numpy arrays or Pandas dataframes.
 
 ## TODO
 
-* Support Pandas DataFrames
+* ~~Support Pandas DataFrames~~
+* Let users to decide initialized positions (now randomly initialized, may not converge to the best results)
 * Refactor the codes
 * Make the package available on PyPI
