@@ -261,7 +261,7 @@ class Evolutionary:
 
             # determine whether to mutate in R
             ran_choice = random.random()
-            if ran_choice > p2:
+            if ran_choice > self.p2:
                 sol_list[random.choice(R)] = str(random.randint(0, phi - 1))
 
             new_set.append("".join(sol_list))
@@ -320,6 +320,14 @@ class Evolutionary:
 
         """
 
+        # accommodate Pandas DataFrame.
+        feature_names = []
+        is_dataframe = False
+        if isinstance(data, pd.DataFrame):
+            is_dataframe = True
+            feature_names = data.columns.values.tolist()
+            data = data.values
+
         S = self.initiate_seed_population(p, k, data, phi)
         best_set = pd.DataFrame()
         grid_ranges_dict = {}
@@ -327,7 +335,7 @@ class Evolutionary:
         for i in range(iterations): # instead of using the 95% convergence idea, need to manually configure termination criterion
             S = self.selection(S, phi, data)
             S = self.crossover(S, phi, data)
-            S = self.mutation(S, self.p1, self.p2, phi)
+            S = self.mutation(S, phi)
 
             # rank the solutions in S and get the top m results
             sparsity_coeff_dict = defaultdict(dict)
@@ -365,7 +373,21 @@ class Evolutionary:
 
         best_set = best_set[:m]
 
-        self.grid_ranges_dict = grid_ranges_dict
-        self.best_set = best_set['solution'].tolist()
+        # convert the best set string representations
+        if is_dataframe:
+            best_set['columns_selected'], best_set['grid_ranges'] = zip(*best_set['solution'].map(str_to_col_grid_lists))
+            best_set_cleaned = best_set.drop(['level_0', 'solution'], axis=1)
+            ordered_list = ['columns_selected', 'grid_ranges', 'sparsity_coeff_score', 'num_records']
+            best_set_cleaned = best_set_cleaned[ordered_list]
+
+            fixed_grid_ranges_dict = {feature_names[k]: v for k, v in orig_grid_ranges_dict.items()}
+            orig_grid_ranges_dict = copy.deepcopy(fixed_grid_ranges_dict)
+
+            self.grid_ranges_dict = orig_grid_ranges_dict
+            self.best_set = best_set_cleaned
+
+        else:
+            self.grid_ranges_dict = grid_ranges_dict
+            self.best_set = best_set['solution'].tolist()
 
         return self.grid_ranges_dict, self.best_set
